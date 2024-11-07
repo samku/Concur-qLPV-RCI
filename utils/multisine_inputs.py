@@ -19,7 +19,7 @@ def generate_multisine(nu, N, fmin, fmax, umin, umax, nf):
         for freq, phase in zip(frequencies, phases):
             u += np.sin(2 * np.pi * freq * t + phase)
         u /= np.max(np.abs(u))
-        u = u * (umax[i] - umin[i]) / 2 + (umax[i] + umin[i]) / 2 #
+        u = u * (umax[i] - umin[i]) / 2 + (umax[i] + umin[i]) / 2 
         U[:, i] = u
 
     return U
