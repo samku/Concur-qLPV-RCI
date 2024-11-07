@@ -7,6 +7,9 @@ from jax_sysid.models import Model
 from jax_sysid.models import StaticModel
 from jax_sysid.utils import compute_scores, standard_scale, unscale
 from jax_sysid.models import LinearModel
+import jaxopt
+from jax.scipy.optimize import minimize
+from jax_sysid.utils import lbfgs_options
 
 import casadi as ca
 import matplotlib.pyplot as plt

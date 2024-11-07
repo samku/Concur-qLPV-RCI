@@ -7,7 +7,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
     Ys_data = Ys_data
     Us_data = Us_data
     model = LinearModel(nx, ny, nu, feedthrough=False)
-    model.loss(rho_x0=0.0001, rho_th=0.001)
+    model.loss(rho_x0=0.0001, rho_th=0.001, train_x0 = False)
     model.optimization(adam_eta=0.001, adam_epochs=1000, lbfgs_epochs=1000)
     model.fit(Ys_data, Us_data)
     A, B, C, D = model.ssdata()
@@ -19,26 +19,18 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         X_sim[i+1] = A@X_sim[i]+B@Us_data[i]
         Y_sim[i] = C@X_sim[i]
 
-    BFR_SS = np.maximum(0, 1-np.linalg.norm(Ys_data-Y_sim,2)/np.linalg.norm(Ys_data-np.mean(Y_sim),2))
-    print('BFR_SS: ', BFR_SS)
-
     model_dict = {} 
     model_dict['A'] = A 
     model_dict['B'] = B
     model_dict['C'] = C
-    model_dict['L'] = np.zeros((nx,ny))
-    model_dict['BFR_SS'] = BFR_SS
 
     if not only_SysID:
         #Extract disturbances
         prediction_error = Ys_data-Y_sim
-        max_prediction_error = np.max(prediction_error)
-        min_prediction_error = np.min(prediction_error)
+        max_prediction_error = np.max(prediction_error,axis=0)
+        min_prediction_error = np.min(prediction_error,axis=0)
         w0 = 0.5*(max_prediction_error+min_prediction_error)
         epsw = 0.5*(max_prediction_error-min_prediction_error)
-        if ny==1:
-            w0 = np.array([w0])
-            epsw = np.array([epsw])
         
         #Compute RCI set for LTI system
         HY = constraints['HY']
@@ -116,42 +108,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
             uRCI = np.reshape(uRCI, (1, m_bar))
         hU_modified = sol.value(hU_modified)
         cost = sol.value(cost_traj)
-
-        print('hU_modified: ', hU_modified)
-        print('hU: ', hU)
-
-        fig, ax2 = plt.subplots()
-        for i in range(mY):
-            x_traj_loc = x_traj[nx*i:nx*(i+1),:]
-            y_loc = C@x_traj_loc
-            ax2.plot(y_loc[0])
-            ax2.plot(np.ones(N_MPC)*Y_vert[i],'k--')
-        ax2.autoscale()
-        plt.show()
-
-        X_RCI_vertices = np.zeros((m_bar,nx))
-        Y_RCI_vertices = np.zeros((m_bar,ny))
-        for i in range(m_bar):
-            X_RCI_vertices[i] = WM @ Xt_vert[i]
-            Y_RCI_vertices[i] = C @ WM @ Xt_vert[i]  
         
-        
-        fig, (ax1, ax2) = plt.subplots(2,1)
-        RCI_set = Polytope(A = F @ WMinv, b = y0)
-        RCI_set_proj = RCI_set.projection(project_away_dim = [2,3])
-        RCI_set_proj.plot(ax = ax1, patch_args={"facecolor": "m"})
-        ax1.scatter(X_RCI_vertices[:,0], X_RCI_vertices[:,1], color='r')
-        ax1.autoscale()
-        if ny>=2:
-            Y_set.project([1,2]).plot(ax2, color='b', alpha=0.5)
-            ax2.scatter(Y_RCI_vertices[:,0], Y_RCI_vertices[:,1], color='r')
-            ax2.autoscale()
-            plt.show()
-        else:
-            print('Vertices: ', np.array([np.max(Y_RCI_vertices), np.min(Y_RCI_vertices)]))
-            print('Y constraints: ', Y_vert)
-        plt.show()
-
         #Construct CC set
         F = F @ WMinv
         
@@ -176,7 +133,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         E = E[~np.all(E == 0, axis=1)]
 
         RCI_dict = {'F': F, 'V': V, 'E': E, 'yRCI': y0, 'uRCI': uRCI, 'x_traj': x_traj, 'hU_modified':hU_modified,
-                    'cost': sol.value(cost), 'Y_RCI_vertices':Y_RCI_vertices, 'W': np.vstack((w0, epsw))}
+                    'cost': sol.value(cost), 'W': np.vstack((w0, epsw))}
         
     else:
         RCI_dict = {}
