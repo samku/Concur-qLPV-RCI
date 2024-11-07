@@ -1,7 +1,7 @@
 from imports import *
 from utils.qLPV_BFR import qLPV_BFR
 
-def qLPV_identification(dataset, sizes, kappa, only_px, id_params, plot_results = False, use_init_LTI = True, only_SysID = False):
+def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI = True, only_SysID = False):
     
     #Extract data
     Y_train = dataset['Y_train']
@@ -221,14 +221,20 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, plot_results 
     model_LPV = {'A': A_new, 'B': B_new, 'C': C_new, 'Win': Win_new, 'bin': bin_new, 'Whid': Whid_new, 'bhid': bhid_new, 'Wout': Wout_new, 'bout': bout_new}
     
     #Check BFRs
-    model_LTI = {'A': A, 'B': B, 'C': C, 'Win': Win, 'bin': bin, 'Whid': Whid, 'bhid': bhid, 'Wout': Wout, 'bout': bout}
+    model_LTI_BFR = {'A': A, 'B': B, 'C': C, 'Win': Win, 'bin': bin, 'Whid': Whid, 'bhid': bhid, 'Wout': Wout, 'bout': bout}
     BFR_train_qLPV, y_train_qLPV = qLPV_BFR(model_LPV, Us_train, Ys_train, only_px = only_px)
-    BFR_train_LTI, y_train_LTI = qLPV_BFR(model_LTI, Us_train, Ys_train, only_px = only_px)
+    BFR_train_LTI, y_train_LTI = qLPV_BFR(model_LTI_BFR, Us_train, Ys_train, only_px = only_px)
     print('BFR train: qLPV', BFR_train_qLPV, 'LTI', BFR_train_LTI)
     BFR_test_qLPV, y_test_qLPV = qLPV_BFR(model_LPV, Us_test, Ys_test, only_px = only_px)
-    BFR_test_LTI, y_test_LTI = qLPV_BFR(model_LTI, Us_test, Ys_test, only_px = only_px)
+    BFR_test_LTI, y_test_LTI = qLPV_BFR(model_LTI_BFR, Us_test, Ys_test, only_px = only_px)
     print('BFR test: qLPV', BFR_test_qLPV, 'LTI', BFR_test_LTI)
     
+    #Save sim data
+    model_LPV['yhat_train'] = y_train_qLPV
+    model_LPV['yhat_test'] = y_test_qLPV
+    model_LTI['yhat_train'] = y_train_LTI
+    model_LTI['yhat_test'] = y_test_LTI
+
     if not only_SysID:
         #Check constraint violation
         RCI_vector =RCI_constraints(A_new,B_new,C_new)
@@ -282,22 +288,6 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, plot_results 
         costLPV = sol.value(cost)
         x_traj = sol.value(x_traj)
         u_traj = sol.value(u_traj)
-
-        fig, (ax1, ax2) = plt.subplots(2,1)
-        if nx>2:
-            projected_polytope = Polytope(A=F,b=yLPV).projection(project_away_dim = np.arange(2,nx))
-            projected_polytope.plot(ax=ax1)
-        else:
-            Polytope(A=F,b=yLPV).plot(ax=ax1)
-        for i in range(vY):
-            x_traj_loc = x_traj[nx*i:nx*(i+1),:]
-            ax1.plot(x_traj_loc[0,:],x_traj_loc[1,:],'r')
-            y_loc = C_new@x_traj_loc
-            ax2.plot(y_loc[0])
-            ax2.plot(np.ones(N_MPC)*Y_vert[i],'k--')
-        ax1.autoscale()
-        plt.show()
-
         RCI_LPV['yRCI'] = yLPV
         RCI_LPV['uRCI'] = uLPV
         RCI_LPV['x_traj'] = x_traj

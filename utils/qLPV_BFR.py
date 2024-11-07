@@ -78,7 +78,7 @@ def qLPV_BFR(model_qLPV, input, output, only_px = False, observer = False):
     def predict_x0(x0):
         y_sim = jax.lax.scan(simulator, x0, input)[1]
         return jnp.sum((output-y_sim)**2)
-    options_BFGS = lbfgs_options(iprint=0, iters=1000, lbfgs_tol=1.e-10, memory=5)
+    options_BFGS = lbfgs_options(iprint=-1, iters=1000, lbfgs_tol=1.e-10, memory=5)
     solver = jaxopt.ScipyBoundedMinimize(
         fun=predict_x0, tol=1.e-10, method="L-BFGS-B", maxiter=1000, options=options_BFGS)
     x0_optimized, state = solver.run(jnp.zeros((nx,)), bounds=(-100*np.ones(nx), 100*np.ones(nx)))  

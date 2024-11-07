@@ -10,7 +10,7 @@ from jax_sysid.models import LinearModel
 import jaxopt
 from jax.scipy.optimize import minimize
 from jax_sysid.utils import lbfgs_options
-
+import qpax
 import casadi as ca
 import matplotlib.pyplot as plt
 from pycvxset import Polytope

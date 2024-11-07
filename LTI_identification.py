@@ -7,8 +7,8 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
     Ys_data = Ys_data
     Us_data = Us_data
     model = LinearModel(nx, ny, nu, feedthrough=False)
-    model.loss(rho_x0=0.0001, rho_th=0.001, train_x0 = False)
-    model.optimization(adam_eta=0.001, adam_epochs=1000, lbfgs_epochs=1000)
+    model.loss(rho_x0=0.000, rho_th=0.001)
+    model.optimization(adam_eta=0.001, adam_epochs=1000, lbfgs_epochs=5000)
     model.fit(Ys_data, Us_data)
     A, B, C, D = model.ssdata()
 
@@ -104,6 +104,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         WMinv = sol.value(WMinv_init)
         uRCI = sol.value(uRCI_init)
         x_traj = sol.value(x_traj)
+        u_traj = sol.value(u_traj)
         if nu==1:
             uRCI = np.reshape(uRCI, (1, m_bar))
         hU_modified = sol.value(hU_modified)
@@ -134,6 +135,18 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
 
         RCI_dict = {'F': F, 'V': V, 'E': E, 'yRCI': y0, 'uRCI': uRCI, 'x_traj': x_traj, 'hU_modified':hU_modified,
                     'cost': sol.value(cost), 'W': np.vstack((w0, epsw))}
+        RCI_dict = {}
+        RCI_dict['F'] = F   
+        RCI_dict['V'] = V
+        RCI_dict['E'] = E
+        RCI_dict['yRCI'] = y0
+        RCI_dict['uRCI'] = uRCI
+        RCI_dict['x_traj'] = x_traj
+        RCI_dict['hU_modified'] = hU_modified
+        RCI_dict['cost'] = sol.value(cost)
+        RCI_dict['W'] = np.vstack((w0, epsw))
+        RCI_dict['x_traj'] = x_traj
+        RCI_dict['u_traj'] = u_traj
         
     else:
         RCI_dict = {}
