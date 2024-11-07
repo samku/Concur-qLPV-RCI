@@ -72,7 +72,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         hU_modified = ca.vertcat(u_bound_mod, u_bound_mod)
 
         for k in range(m_bar):
-            vector = F @ (WMinv_init @ (A @ WM_init @ Xt_vert[k] + B @ uRCI_init[:,k])) - y0
+            vector = F @ (WMinv_init @ (A @ WM_init @ Xt_vert[k] + B @ uRCI_init[:,k])) - 0.95*y0
             opti.subject_to(vector <= 0)
             vector = HY @ C @ WM_init @ Xt_vert[k] - hY_tight
             opti.subject_to(vector <= 0)
@@ -97,7 +97,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
             vector = C@x_traj_loc[:,N_MPC]-Y_vert[i]
             cost_traj = cost_traj+ca.dot(vector,vector)
 
-        opti.minimize(cost_traj+1000*cost_bound)
+        opti.minimize(cost_traj+10000*cost_bound)
         opti.solver('ipopt')
         sol = opti.solve()
         WM = sol.value(WM_init)

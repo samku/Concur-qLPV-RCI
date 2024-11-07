@@ -225,7 +225,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         c = -2*RR.T@yvec_kron
         if QP_form==0:
             #Primal form
-            QP_soln = qpax.solve_qp_primal(Q, c, A_eq, b_eq, A_ineq, b_ineq, solver_tol=1e-3, target_kappa=1e-6)
+            QP_soln = qpax.solve_qp_primal(Q, c, A_eq, b_eq, A_ineq, b_ineq, solver_tol=1e-6, target_kappa=1e-6)
         else:
             #Dual form - needs regularization>0
             Q_inv = jnp.linalg.inv(Q)
@@ -245,7 +245,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
             A_ineq_dual = jnp.hstack((-jnp.eye(num_ineq), jnp.zeros((num_ineq,num_eq))))
             b_ineq_dual = jnp.zeros(num_ineq)
 
-            QP_dual_soln = qpax.solve_qp_primal(Q_dual,c_dual,A_eq_dual,b_eq_dual,A_ineq_dual,b_ineq_dual, solver_tol=1e-3, target_kappa=1e-6)
+            QP_dual_soln = qpax.solve_qp_primal(Q_dual,c_dual,A_eq_dual,b_eq_dual,A_ineq_dual,b_ineq_dual, solver_tol=1e-6, target_kappa=1e-6)
             lambda_dual = QP_dual_soln[:num_ineq]
             mu_dual = QP_dual_soln[num_ineq:]
             QP_soln = -Q_inv@(c+A_ineq.T@lambda_dual+A_eq.T@mu_dual)
@@ -320,7 +320,6 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
 
     
     fig, (ax1, ax2) = plt.subplots(1, 2)
-    print(yRCI_new)
     RCI_new = Polytope(A=F,b=np.array(yRCI_new))
     RCI_Y_new = Polytope(V=Y_RCI_V)
     if nx>=2:
