@@ -18,6 +18,8 @@ from functools import partial
 from pathlib import Path
 from itertools import combinations
 from scipy.linalg import block_diag
+import control as ctrl
+
 
 import pickle
 import time
