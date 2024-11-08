@@ -225,8 +225,6 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
     Wout_new = np.array(model.params[7])
     bout_new = np.array(model.params[8])
     model_LPV = {'A': A_new, 'B': B_new, 'C': C_new, 'Win': Win_new, 'bin': bin_new, 'Whid': Whid_new, 'bhid': bhid_new, 'Wout': Wout_new, 'bout': bout_new}
-    
-    print(Wout_new)
 
     #Check BFRs
     model_LTI_BFR = {'A': A, 'B': B, 'C': C, 'Win': Win, 'bin': bin, 'Whid': Whid, 'bhid': bhid, 'Wout': Wout, 'bout': bout}
