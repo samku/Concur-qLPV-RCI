@@ -1,4 +1,7 @@
 from imports import *
+"""
+Model class for qLPV systems for control design : plant input to plant output. Scaling handled inside
+"""
 
 def swish(x):
     return x/(1+np.exp(-x))

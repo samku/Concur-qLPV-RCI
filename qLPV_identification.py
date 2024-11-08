@@ -1,3 +1,9 @@
+"""
+Initialization for qLPV+RCI identification
+Only SysID identification if only_SysID = True 
+Advisable to use LTI initialization also if only_SysID = True
+"""
+
 from imports import *
 from utils.qLPV_BFR import qLPV_BFR
 

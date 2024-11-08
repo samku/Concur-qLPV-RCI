@@ -1,3 +1,7 @@
+"""
+LTI SysID and template matrix F constructed here
+"""
+
 from imports import *
 
 def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, only_SysID = False):
@@ -42,7 +46,8 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         Y_vert = Y_set.V
         mY = len(Y_vert)
 
-        #For 2D, select number of facets of template
+        #Hardcoded $\tilde{F}$ matrix
+        #For 2D, can select number of facets of template
         #Similar to A One-step Approach to Computing a Polytopic Robust Positively Invariant Set, P.Trodden
         m = 4
         if nx == 2:
@@ -110,9 +115,8 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         hU_modified = sol.value(hU_modified)
         cost = sol.value(cost_traj)
         
-        #Construct CC set
+        #Construct configuration constraints
         F = F @ WMinv
-        
         V = [] #Vertex maps
         all_combinations = list(combinations(range(m), nx))
         for i in range(m_bar): #Keep index of input and state the same

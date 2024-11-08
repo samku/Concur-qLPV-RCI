@@ -84,21 +84,6 @@ y_track_min_LTI = model.y_scaler[0] + np.min(yRCI_vert_LTI)/model.y_scaler[1]
 y_track_max_LPV_init = model.y_scaler[0] + np.max(yRCI_vert_LPV_init)/model.y_scaler[1]
 y_track_min_LPV_init = model.y_scaler[0] + np.min(yRCI_vert_LPV_init)/model.y_scaler[1]
 
-Y_RCI_set_model = Polytope(V=yRCI_vert)
-Y_RCI_H = Y_RCI_set_model.A * model.y_scaler[1]
-Y_RCI_h = Y_RCI_set_model.b + Y_RCI_H @ model.y_scaler[0]
-Y_RCI_set = Polytope(A=Y_RCI_H, b=Y_RCI_h)
-
-Y_RCI_set_LTI_model = Polytope(V=yRCI_vert_LTI)
-Y_RCI_H_LTI = Y_RCI_set_LTI_model.A * model.y_scaler[1]
-Y_RCI_h_LTI = Y_RCI_set_LTI_model.b + Y_RCI_H_LTI @ model.y_scaler[0]
-Y_RCI_set_LTI = Polytope(A=Y_RCI_H_LTI, b=Y_RCI_h_LTI)
-
-Y_RCI_set_LPV_init_model = Polytope(V=yRCI_vert_LPV_init)
-Y_RCI_H_LPV_init = Y_RCI_set_LPV_init_model.A * model.y_scaler[1]
-Y_RCI_h_LPV_init = Y_RCI_set_LPV_init_model.b + Y_RCI_H_LPV_init @ model.y_scaler[0] 
-Y_RCI_set_LPV_init = Polytope(A=Y_RCI_H_LPV_init, b=Y_RCI_h_LPV_init)
-
 Hcon_plant = HY * model.y_scaler[1]
 hcon_plant = hY + Hcon_plant @ model.y_scaler[0]
 Hcon = Polytope(A=Hcon_plant, b=hcon_plant)

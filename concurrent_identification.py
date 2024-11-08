@@ -126,7 +126,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         x_next = state_fcn_obsv(x, z, params).reshape(-1)
         return x_next, y_next
     
-    #@jax.jit
+    @jax.jit
     def RCI_computation(params):
         A, B, C, L, Win, bin, Whid, bhid, Wout, bout= params 
         #Extract disturbance set parameters
@@ -259,19 +259,8 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         
         return cost, yRCI_comp, uRCI_comp, x_trajs, u_trajs, w_hat, eps_w
      
-    if 0:
-        params = [A,B,C,L,Win,bin,Whid,bhid,Wout,bout]
-        costRCI, yRCI, uRCI, x_trajs, u_trajs, w_hat, eps_w = RCI_computation(params)
-        print('Cost:', costRCI) 
-        print('Cost orig:', RCI_LPV['cost'])   
-
-        print(RCI_LPV['x_traj'].shape)
-        print(x_trajs.shape)
-        pause
-
-
+    @jax.jit
     def custom_regularization(params,x0):       
-        A,B,C,L,Win,bin,Whid,bhid,Wout,bout = params
         cost_RCI, _, _, _, _, _, _ = RCI_computation(params)
         return weight_RCI*cost_RCI
 
@@ -309,41 +298,6 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
     RCI_concur['W'] = np.vstack((w_hat_new, epsw_new))
     print('Original cost:', costRCI_old)
     print('Updated cost:', costRCI_new)
-
-    #Test invariance
-    X_RCI_V = np.zeros((m_bar,nx))
-    Y_RCI_V = np.zeros((m_bar, ny))
-    X_RCI_V_old = np.zeros((m_bar,nx))
-    Y_RCI_V_old = np.zeros((m_bar, ny))
-    Xnext_RCI_V = np.zeros((nq*m_bar, nx))
-    Ynext_RCI_V = np.zeros((nq*m_bar, ny))
-    count = -1
-    for i in range(m_bar):
-        X_RCI_V[i] = V[i] @ yRCI_new
-        Y_RCI_V[i] = C_new @ V[i] @ yRCI_new
-        X_RCI_V_old[i] = V[i] @ yRCI_old
-        Y_RCI_V_old[i] = C @ V[i] @ yRCI_old
-        for k in range(nq):
-            count = count+1
-            Xnext_RCI_V[count] = A_new[k] @ V[i] @ yRCI_new + B_new[k] @ uRCI_new[i]
-            Ynext_RCI_V[count] = C_new @ Xnext_RCI_V[count]
-
-    
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    RCI_new = Polytope(A=F,b=np.array(yRCI_new))
-    RCI_Y_new = Polytope(V=Y_RCI_V)
-    if nx>=2:
-        RCI_projected = RCI_new.projection(project_away_dim = np.arange(2,nx))
-    else:
-        RCI_projected = RCI_new
-    RCI_projected.plot(ax=ax1)
-    ax1.scatter(X_RCI_V[:,0], X_RCI_V[:,1], color='b')
-    ax1.scatter(Xnext_RCI_V[:,0], Xnext_RCI_V[:,1], color='r')
-    plt.show()
-    
-    print('Vertices old: ', np.array([np.max(Y_RCI_V_old), np.min(Y_RCI_V_old)]))
-    print('Vertices new: ', np.array([np.max(Y_RCI_V), np.min(Y_RCI_V)]))
-    print('Y constraints: ', Y_vert)
 
     #Check BFRs
     model_iLPV_BFR = {'A': A, 'B': B, 'C': C, 'Win': Win, 'bin': bin, 'Whid': Whid, 'bhid': bhid, 'Wout': Wout, 'bout': bout}
