@@ -74,7 +74,7 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         u_bound_mod = opti.variable(nu)
         du_bound = hU[:nu] - u_bound_mod
         cost_bound = ca.dot(du_bound, du_bound)
-        hU_modified = ca.vertcat(u_bound_mod, u_bound_mod)
+        hU_modified = ca.vertcat(u_bound_mod, u_bound_mod) #Enable relaxation slightly to improve chances of feasibility
 
         for k in range(m_bar):
             vector = F @ (WMinv_init @ (A @ WM_init @ Xt_vert[k] + B @ uRCI_init[:,k])) - 0.95*y0
@@ -115,9 +115,10 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
         hU_modified = sol.value(hU_modified)
         cost = sol.value(cost_traj)
         
-        #Construct configuration constraints
+        #Construct vertex maps and configuration constraints
         F = F @ WMinv
-        V = [] #Vertex maps
+        #Vertex maps
+        V = [] 
         all_combinations = list(combinations(range(m), nx))
         for i in range(m_bar): #Keep index of input and state the same
             for j in range(len(all_combinations)):
