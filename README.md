@@ -1,4 +1,4 @@
-# Project Name
+# Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets
 This repository contains the code for the paper "Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets" by S.K.Mulagaleti and A.Bemporad
 
 ## Requirements
@@ -18,11 +18,6 @@ This project requires the following Python packages:
 - [pycvxset](https://github.com/merlresearch/pycvxset) 
 - [scipy](https://www.scipy.org/)
 - [control](https://python-control.readthedocs.io/)
-- [functools](https://docs.python.org/3/library/functools.html) *(Standard library)*
-- [pathlib](https://docs.python.org/3/library/pathlib.html) *(Standard library)*
-- [itertools](https://docs.python.org/3/library/itertools.html) *(Standard library)*
-- [pickle](https://docs.python.org/3/library/pickle.html) *(Standard library)*
-- [time](https://docs.python.org/3/library/time.html) *(Standard library)*
 
 ## Installation
 
