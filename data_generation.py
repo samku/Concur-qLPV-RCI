@@ -12,8 +12,8 @@ def generate_dataset(system, N_train, N_test, scale_data, folder_name, file_name
         nu = system.nu_plant
 
         #Training data
-        U_tot = generate_multisine(nu, N_train, 0.1, 100, -system.u_lim, system.u_lim, 10)
-        #U_tot = -system.u_lim + 2.*np.random.rand(num_samples_tot, system.nu_plant) * np.array(system.u_lim)
+        #U_tot = generate_multisine(nu, N_train, 0.1, 100, -system.u_lim, system.u_lim, 10)
+        U_tot = -system.u_lim + 2.*np.random.rand(N_train, system.nu_plant) * np.array(system.u_lim)
         Y_tot = system.simulate(U_tot)
         Y_tot = Y_tot[:-1,:]
         U_train = U_tot[:N_train,:]

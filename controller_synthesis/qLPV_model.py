@@ -39,7 +39,6 @@ class qLPV_model:
         self.HY = parameters['HY']
         self.hY = parameters['hY']
         self.only_px = parameters['only_px']
-        self.kappa = parameters['kappa_safety']
 
     def scale_model(self, y_plant, u_plant):
         y_scaler = self.y_scaler

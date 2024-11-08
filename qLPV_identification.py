@@ -226,6 +226,8 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
     bout_new = np.array(model.params[8])
     model_LPV = {'A': A_new, 'B': B_new, 'C': C_new, 'Win': Win_new, 'bin': bin_new, 'Whid': Whid_new, 'bhid': bhid_new, 'Wout': Wout_new, 'bout': bout_new}
     
+    print(Wout_new)
+
     #Check BFRs
     model_LTI_BFR = {'A': A, 'B': B, 'C': C, 'Win': Win, 'bin': bin, 'Whid': Whid, 'bhid': bhid, 'Wout': Wout, 'bout': bout}
     BFR_train_qLPV, y_train_qLPV = qLPV_BFR(model_LPV, Us_train, Ys_train, only_px = only_px)
@@ -238,6 +240,7 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
     #Save sim data
     model_LPV['yhat_train'] = y_train_qLPV
     model_LPV['yhat_test'] = y_test_qLPV
+    model_LTI = model_LTI_BFR.copy()
     model_LTI['yhat_train'] = y_train_LTI
     model_LTI['yhat_test'] = y_test_LTI
 
@@ -303,7 +306,7 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
     else:
         RCI_LPV = {}
 
-    return model_LPV, model_LTI_BFR, RCI_LPV, RCI_LTI
+    return model_LPV, model_LTI, RCI_LPV, RCI_LTI
 
 
 

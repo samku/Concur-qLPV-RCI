@@ -37,7 +37,6 @@ sim_parameters['hU'] = RCI_concur['hU_modified']
 sim_parameters['HY'] = dataset['constraints']['HY']
 sim_parameters['hY'] = dataset['constraints']['hY']
 sim_parameters['only_px'] = models['only_px']
-sim_parameters['kappa_safety'] = models['kappa']
 model = qLPV_model(sim_parameters)
 
 A = model.A
