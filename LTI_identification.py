@@ -7,8 +7,8 @@ def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, 
     Ys_data = Ys_data
     Us_data = Us_data
     model = LinearModel(nx, ny, nu, feedthrough=False)
-    model.loss(rho_x0=0.000, rho_th=0.001)
-    model.optimization(adam_eta=0.001, adam_epochs=1000, lbfgs_epochs=5000)
+    model.loss(rho_x0=0.0001, rho_th=0.001, train_x0=False)
+    model.optimization(adam_eta=0.001, adam_epochs=2000, lbfgs_epochs=5000)
     model.fit(Ys_data, Us_data)
     A, B, C, D = model.ssdata()
 

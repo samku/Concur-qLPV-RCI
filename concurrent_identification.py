@@ -126,15 +126,15 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         x_next = state_fcn_obsv(x, z, params).reshape(-1)
         return x_next, y_next
     
-    @jax.jit
+    #@jax.jit
     def RCI_computation(params):
         A, B, C, L, Win, bin, Whid, bhid, Wout, bout= params 
         #Extract disturbance set parameters
         simulator = partial(SS_forward_output, params=params)
         x_next, y_next = jax.lax.scan(simulator, jnp.zeros((nx,)), Zs_train)
         error = Ys_train-y_next
-        w_hat = jnp.array([(jnp.max(error)+jnp.min(error))/2])
-        eps_w = jnp.array([(jnp.max(error)-jnp.min(error))/2])
+        w_hat = (jnp.max(error,axis=0)+jnp.min(error,axis=0))/2
+        eps_w = (jnp.max(error,axis=0)-jnp.min(error,axis=0))/2
 
         #Build QP
         A_mean = jnp.mean(A, axis=0)
@@ -225,7 +225,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         c = -2*RR.T@yvec_kron
         if QP_form==0:
             #Primal form
-            QP_soln = qpax.solve_qp_primal(Q, c, A_eq, b_eq, A_ineq, b_ineq, solver_tol=1e-6, target_kappa=1e-6)
+            QP_soln = qpax.solve_qp_primal(Q, c, A_eq, b_eq, A_ineq, b_ineq, solver_tol=1e-3, target_kappa=1e-6)
         else:
             #Dual form - needs regularization>0
             Q_inv = jnp.linalg.inv(Q)
@@ -259,6 +259,17 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
         
         return cost, yRCI_comp, uRCI_comp, x_trajs, u_trajs, w_hat, eps_w
      
+    if 0:
+        params = [A,B,C,L,Win,bin,Whid,bhid,Wout,bout]
+        costRCI, yRCI, uRCI, x_trajs, u_trajs, w_hat, eps_w = RCI_computation(params)
+        print('Cost:', costRCI) 
+        print('Cost orig:', RCI_LPV['cost'])   
+
+        print(RCI_LPV['x_traj'].shape)
+        print(x_trajs.shape)
+        pause
+
+
     def custom_regularization(params,x0):       
         A,B,C,L,Win,bin,Whid,bhid,Wout,bout = params
         cost_RCI, _, _, _, _, _, _ = RCI_computation(params)
@@ -270,8 +281,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
     model_concur = Model(nx, ny, nu, state_fcn=state_fcn, output_fcn=output_fcn, Ts=1)
     model_concur.init(params=[A, B, C, L, Win, bin, Whid, bhid, Wout, bout])    
     model_concur.loss(rho_th=rho_th, train_x0 = train_x0, custom_regularization=custom_regularization)
-    model_concur.optimization(adam_eta=eta, adam_epochs=adam_epochs, lbfgs_epochs=lbfgs_epochs, 
-                       memory=memory, iprint=iprint)
+    model_concur.optimization(adam_eta=eta, adam_epochs=adam_epochs, lbfgs_epochs=lbfgs_epochs, memory=memory, iprint=iprint)
     model_concur.fit(Ys_train, Us_train)
     identified_params = model_concur.params
 
@@ -346,6 +356,7 @@ def concurrent_identification(dataset,model_LPV,RCI_LPV,sizes,only_px,kappa,id_p
     BFR_test_qLPV_OL, y_test_qLPV_OL = qLPV_BFR(model_LPV_concur, Us_test, Ys_test, only_px = only_px, observer = False)
     BFR_test_iLPV, y_test_iLPV = qLPV_BFR(model_iLPV_BFR, Us_test, Ys_test, only_px = only_px)
     print('BFR test: qLPV OL', BFR_test_qLPV_OL, 'qLPV CL', BFR_test_qLPV_CL, 'init LPV', BFR_test_iLPV)
+
     
     #Save sim data
     model_LPV_concur['yhat_train_CL'] = y_train_qLPV_CL

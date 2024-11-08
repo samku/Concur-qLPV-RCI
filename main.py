@@ -20,7 +20,7 @@ dataset = generate_dataset(system, N_train, N_test, scale_data, folder_name, fil
 
 #Initialization
 file_name = 'initial_models'
-overwrite_data = True
+overwrite_data = False
 file_path = generate_file_path(folder_name, file_name, current_directory)
 if not file_path.exists() or overwrite_data:
     only_SysID = False
@@ -33,8 +33,8 @@ if not file_path.exists() or overwrite_data:
     only_px = 1 #0 if p(x,u), 1 if p(x) for scheduling function
     kappa = 1.1 #Disturbance set inflation factor
     N_MPC = 50 #Horizon length for RCI set size factor
-    id_params = {'eta': 0.001, 'rho_th': 0.000, 'adam_epochs': 5000, 'lbfgs_epochs': 5000, 'iprint': 100, 'memory': 10,
-                'train_x0': False, 'weight_RCI':2, 'N_MPC': N_MPC, 'kappa_p': 0, 'kappa_x': 0.}
+    id_params = {'eta': 0.001, 'rho_th': 0.000, 'adam_epochs': 2000, 'lbfgs_epochs': 5000, 'iprint': 100, 'memory': 10,
+                'train_x0': True, 'weight_RCI':2, 'N_MPC': N_MPC, 'kappa_p': 0, 'kappa_x': 0.}
     model_LPV, model_LTI, RCI_LPV, RCI_LTI = qLPV_identification(dataset, sizes, kappa, only_px, id_params, 
                                                                 use_init_LTI = use_init_LTI, only_SysID = only_SysID)
     models = {}
@@ -69,7 +69,7 @@ if not file_path.exists() or overwrite_data:
     kappa = models['kappa']
     N_MPC = models['N_MPC']
 
-    id_params = {'eta': 0.001, 'rho_th': 0.00, 'adam_epochs': 2000, 'lbfgs_epochs': 0, 
+    id_params = {'eta': 0.001, 'rho_th': 0.000, 'adam_epochs': 2000, 'lbfgs_epochs': 0, 
                 'iprint': 100, 'memory': 100, 'train_x0': True, 'weight_RCI': 0.0001, 'N_MPC': N_MPC, 'QP_form': 0, 'regular': 0.0}
     model_LPV_concur, RCI_concur = concurrent_identification(dataset, model_LPV, RCI_LPV, sizes, only_px, kappa, id_params)
 
@@ -84,4 +84,10 @@ else:
     with open(file_path, 'rb') as f:
         models = pickle.load(f)
 
+
+
+from utils.qLPV_BFR import qLPV_BFR
+BFR_train_qLPV_CL, y_train_qLPV_CL = qLPV_BFR(models['model_LPV_concur'], dataset['Us_train'], dataset['Ys_train'], only_px = models['only_px'], observer = False)
+BFR_test_qLPV_CL, y_test_qLPV_CL = qLPV_BFR(models['model_LPV_concur'], dataset['Us_test'], dataset['Ys_test'], only_px = models['only_px'], observer = False)
+print('BFR train: qLPV CL', BFR_train_qLPV_CL, 'qLPV CL', BFR_test_qLPV_CL)
 

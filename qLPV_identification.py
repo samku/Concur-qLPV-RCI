@@ -254,6 +254,8 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
         opti = ca.Opti()
         yLPV = opti.variable(m)
         uLPV = opti.variable(nu,m_bar)
+        x_traj = opti.variable(nx*vY, N_MPC)
+        u_traj = opti.variable(nu*vY, N_MPC-1)
         opti.subject_to(E@yLPV<=0)
         for i in range(m_bar):
             for j in range(nq):
@@ -264,20 +266,18 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
         A_mean = np.mean(A_new, axis = 0)
         B_mean = np.mean(B_new, axis = 0)
         cost = 0.
-        x_traj = opti.variable(nx*vY, N_MPC+1)
-        u_traj = opti.variable(nu*vY, N_MPC)
         for i in range(vY):
             x_traj_loc = x_traj[nx*i:nx*(i+1),:]
             u_traj_loc = u_traj[nu*i:nu*(i+1),:]
             opti.subject_to(x_traj_loc[:,0]==np.zeros((nx)))
-            for t in range(N_MPC):
+            for t in range(N_MPC-1):
                 opti.subject_to(x_traj_loc[:,t+1]==A_mean@x_traj_loc[:,t]+B_mean@u_traj_loc[:,t])
                 opti.subject_to(F@x_traj_loc[:,t]<=yLPV)
                 opti.subject_to(HU@u_traj_loc[:,t]<=hU)
                 vector = C_new@x_traj_loc[:,t]-Y_vert[i]
                 cost = cost+ca.dot(vector,vector)
-            opti.subject_to(F@x_traj_loc[:,N_MPC]<=yLPV)
-            vector = C_new@x_traj_loc[:,N_MPC]-Y_vert[i]
+            opti.subject_to(F@x_traj_loc[:,N_MPC-1]<=yLPV)
+            vector = C_new@x_traj_loc[:,N_MPC-1]-Y_vert[i]
             cost = cost+ca.dot(vector,vector)
         
         opti.minimize(cost)
@@ -297,7 +297,7 @@ def qLPV_identification(dataset, sizes, kappa, only_px, id_params, use_init_LTI 
     else:
         RCI_LPV = {}
 
-    return model_LPV, model_LTI, RCI_LPV, RCI_LTI
+    return model_LPV, model_LTI_BFR, RCI_LPV, RCI_LTI
 
 
 

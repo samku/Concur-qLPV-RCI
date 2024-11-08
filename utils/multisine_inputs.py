@@ -2,8 +2,8 @@ import numpy as np
 
 def generate_multisine(nu, N, fmin, fmax, umin, umax, nf):
     if nu == 1:
-        umin = np.array([umin])
-        umax = np.array([umax])
+        umin = np.array([umin.copy()])
+        umax = np.array([umax.copy()])
     oversampling_factor = 10 
     fs = oversampling_factor * fmax  # Sampling frequency in Hz
     dt = 1 / fs  # Sampling interval

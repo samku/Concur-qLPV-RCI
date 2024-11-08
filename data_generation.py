@@ -9,7 +9,6 @@ def generate_dataset(system, N_train, N_test, scale_data, folder_name, file_name
     file_path = generate_file_path(folder_name, file_name, current_directory)
     if not file_path.exists() or overwrite_data:
         print('Generating dataset...')
-        num_samples_tot = 100
         nu = system.nu_plant
 
         #Training data
@@ -78,5 +77,5 @@ def generate_dataset(system, N_train, N_test, scale_data, folder_name, file_name
         with open(file_path, 'rb') as f:
             dataset = pickle.load(f)
 
-        return dataset
+    return dataset
     

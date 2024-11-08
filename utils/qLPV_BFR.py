@@ -2,17 +2,17 @@ from imports import *
 
 def qLPV_BFR(model_qLPV, input, output, only_px = False, observer = False):
 
-    A = model_qLPV['A']
-    B = model_qLPV['B'] 
-    C = model_qLPV['C']
+    A = model_qLPV['A'].copy()
+    B = model_qLPV['B'].copy() 
+    C = model_qLPV['C'].copy()
     if observer:
-        L = model_qLPV['L']
-    Win = model_qLPV['Win']
-    bin = model_qLPV['bin']
-    Whid = model_qLPV['Whid']
-    bhid = model_qLPV['bhid']
-    Wout = model_qLPV['Wout']
-    bout = model_qLPV['bout']
+        L = model_qLPV['L'].copy()
+    Win = model_qLPV['Win'].copy()
+    bin = model_qLPV['bin'].copy()
+    Whid = model_qLPV['Whid'].copy()
+    bhid = model_qLPV['bhid'].copy()
+    Wout = model_qLPV['Wout'].copy()
+    bout = model_qLPV['bout'].copy()
 
     #Extract sizes
     nq = A.shape[0]
