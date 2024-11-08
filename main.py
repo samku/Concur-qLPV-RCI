@@ -33,8 +33,8 @@ if not file_path.exists() or overwrite_data:
     only_px = 0 #0 if p(x,u), 1 if p(x) for scheduling function
     kappa = 1.1 #Disturbance set inflation factor
     N_MPC = 50 #Horizon length for RCI set size factor
-    id_params = {'eta': 0.001, 'rho_th': 0.0000, 'adam_epochs': 2000, 'lbfgs_epochs': 5000, 'iprint': 100, 'memory': 10,
-                'train_x0': False, 'weight_RCI':2, 'N_MPC': N_MPC, 'kappa_p': 0.001, 'kappa_x': 0.}
+    id_params = {'eta': 0.001, 'rho_th': 0.0000, 'adam_epochs': 1000, 'lbfgs_epochs': 5000, 'iprint': 100, 'memory': 10,
+                'train_x0': False, 'weight_RCI':2, 'N_MPC': N_MPC, 'kappa_p': 0., 'kappa_x': 0.}
     model_LPV, model_LTI, RCI_LPV, RCI_LTI = qLPV_identification(dataset, sizes, kappa, only_px, id_params, 
                                                                 use_init_LTI = use_init_LTI, only_SysID = only_SysID)
     models = {}
