@@ -5,7 +5,6 @@ from data_generation import generate_dataset
 from qLPV_identification import qLPV_identification
 from concurrent_identification import concurrent_identification
 
-
 #Generate/Load dataset
 from plant_models.nonlinear_MSD import nonlinear_MSD
 system = nonlinear_MSD(initial_state=np.zeros(10))

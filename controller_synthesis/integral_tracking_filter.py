@@ -40,7 +40,6 @@ sim_parameters['only_px'] = models['only_px']
 sim_parameters['kappa_safety'] = models['kappa']
 model = qLPV_model(sim_parameters)
 
-
 A = model.A
 B = model.B
 C = model.C
@@ -121,7 +120,7 @@ opts = {"verbose": False,
 
 #Simulate in closed loop
 N_sim = 2000
-Q_track = block_diag(np.eye(model.nx), 0.05) #Weight for LQR
+Q_track = block_diag(np.eye(model.nx), 0.01) #Weight for LQR
 
 x_plant = np.zeros((N_sim+1,system.nx_plant))
 system.state = x_plant[0]
@@ -138,26 +137,12 @@ ref_y = np.zeros((N_sim, 1))
 q_model = np.zeros((N_sim+1, 1))
 projected_indices = np.zeros((N_sim, 1))
 
-figure, [[ax1,ax2],[ax3,ax4]] = plt.subplots(2,2)
-
-if nx==2:
-    Polytope(A=F, b=yRCI).plot(ax = ax2, patch_args = {"facecolor": 'r', "alpha": 0.1})
-    Polytope(A=F, b=yRCI_LPV_init).plot(ax = ax2, patch_args = {"facecolor": 'g', "alpha": 0.1})
-    Polytope(A=F, b=yRCI_LTI).plot(ax = ax2, patch_args = {"facecolor": 'b', "alpha": 0.1})
-    ax2.autoscale()
-else:
-    Polytope(A=F, b=yRCI).projection(project_away_dim = np.linspace(2,nx)).plot(ax = ax2, patch_args = {"facecolor": 'r', "alpha": 0.1})
-    Polytope(A=F, b=yRCI_LPV_init).projection(project_away_dim = np.linspace(2,nx)).plot(ax = ax2, patch_args = {"facecolor": 'g', "alpha": 0.1})
-    Polytope(A=F, b=yRCI_LTI).projection(project_away_dim = np.linspace(2,nx)).plot(ax = ax2, patch_args = {"facecolor": 'b', "alpha": 0.1})
-    ax2.autoscale()
-
 for t in range(N_sim):
-    print(t)
     y_model[t] = model.output(x_model[t])
     y_plant[t] = system.output(x_plant[t], 0.)
     dy_model[t] = y_plant[t] - y_model[t]
 
-    if t%200 == 0 or t == 0:
+    if t%250 == 0 or t == 0:
         #Reference in plant space
         ref_y[t] = 1.4*(y_track_min + (y_track_max-y_track_min)*np.random.rand(1))
     else:
@@ -211,90 +196,53 @@ for t in range(N_sim):
     x_model[t+1] = model.dynamics(x_model[t],u_plant[t],y_plant[t])
     q_model[t+1] = q_model[t] + (y_plant[t]-model.y_scaler[0])*model.y_scaler[1] - yref_model
 
-ax1.plot(ref_y,'k--',alpha = 0.5)
-ax1.plot(y_plant, 'g')
-ax1.plot(y_model,'r--')
-ax1.plot(y_max_con*np.ones(N_sim),'k')
-ax1.plot(y_min_con*np.ones(N_sim),'k')
-ax1.plot(y_track_max*np.ones(N_sim),'r--')
-ax1.plot(y_track_min*np.ones(N_sim),'r--')
-ax1.plot(y_track_max_LTI*np.ones(N_sim),'b--')
-ax1.plot(y_track_min_LTI*np.ones(N_sim),'b--')
-ax1.plot(y_track_max_LPV_init*np.ones(N_sim),'g--')
-ax1.plot(y_track_min_LPV_init*np.ones(N_sim),'g--')
 
-ax2.plot(x_model[:,0],x_model[:,1],'r')
-ax2.scatter(x_model[0,0],x_model[0,1],color='r')
+#Plot results
+print_time = np.arange(0, N_sim)
+plt.rcParams['text.usetex'] = True
+figure, [ax1, ax2, ax3] = plt.subplots(3,1)
 
-for i in range(model.nu):
-    color_random = np.random.rand(3)
-    ax3.plot(u_plant[:,i], color = color_random)
-    ax3.plot(u_bounds_plant[i]*np.ones(N_sim), color = color_random, linestyle = '--')
-    ax3.plot(-u_bounds_plant[i]*np.ones(N_sim), color = color_random, linestyle = '--')
+ax1.plot(np.arange(0,N_sim)*dt,ref_y,'k--')
+ax1.plot(np.arange(0,N_sim)*dt,y_plant, 'g')
+ax1.plot(np.arange(0,N_sim)*dt,y_model,'r--')
+ax1.plot(np.arange(0,N_sim)*dt,y_max_con*np.ones(N_sim),'k')
+ax1.plot(np.arange(0,N_sim)*dt,y_min_con*np.ones(N_sim),'k')
+ax1.plot(np.arange(0,N_sim)*dt,y_track_max*np.ones(N_sim),'b:')
+ax1.plot(np.arange(0,N_sim)*dt,y_track_min*np.ones(N_sim),'b:')
+ax1.set_xlabel(r"$t$")
+ax1.set_ylabel(r"$y$")
+ax1.grid(True)
+ax1.set_xlim([0, dt*(N_sim-1)]) 
+
+ax2.plot(np.arange(0,N_sim)*dt,u_plant[:,0], 'g')
+ax2.plot(np.arange(0,N_sim)*dt,u_bounds_plant[0]*np.ones(N_sim),'k')
+ax2.plot(np.arange(0,N_sim)*dt,-u_bounds_plant[0]*np.ones(N_sim),'k')
 for t in range(N_sim):
     if projected_indices[t] == 1.:
         for i in range(nu):
-            ax3.scatter(t, u_plant[t,i], color = 'r')
+            ax2.scatter(t*dt, u_plant[t,i], color = 'red', s=10)
+ax2.set_xlabel(r"$t$")
+ax2.set_ylabel(r"$u$")
+ax2.grid(True)
+ax2.set_xlim([0, dt*(N_sim-1)]) 
 
+if nx == 2:
+    Polytope(A=F, b=yRCI).plot(ax=ax3, patch_args = {"facecolor": 'w', "alpha": 1, "linewidth": 1, "linestyle": '-', "edgecolor": 'k'})
+    Polytope(A=F, b=yRCI_LPV_init).plot(ax=ax3, patch_args = {"facecolor": 'b', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'b'})
+    Polytope(A=F, b=yRCI_LTI).plot(ax=ax3, patch_args = {"facecolor": 'r', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'r'})
+else:
+    Polytope(A=F, b=yRCI).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'w', "alpha": 1, "linewidth": 1, "linestyle": '-', "edgecolor": 'k'})
+    Polytope(A=F, b=yRCI_LPV_init).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'b', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'b'})
+    Polytope(A=F, b=yRCI_LTI).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'r', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'r'})
+
+ax3.plot(x_model[:,0], x_model[:,1], 'g', linewidth = 2)
+ax3.scatter(x_model[0,0], x_model[0,1], color = 'g')
+ax3.autoscale()
+ax3.set_xlabel(r"$x_1$")
+ax3.set_ylabel(r"$x_2$")
+ax3.grid(True)
+
+plt.tight_layout()
 plt.show()
-
-plt.plot(y_plant-y_model)
-plt.plot(np.ones(N_sim)*w_bounds_ub,'k')
-plt.plot(np.ones(N_sim)*w_bounds_lb,'k')
-plt.show()
-
-sim_parameters = np.zeros((N_sim+1,model.nq))
-for t in range(N_sim+1):
-    sim_parameters[t] = model.parameter(x_model[t],0.).reshape(1,-1)
-plt.plot(sim_parameters)
-plt.show()
-
-if 1:
-    print_time = np.arange(0, N_sim)
-    plt.rcParams['text.usetex'] = True
-    figure, [ax1, ax2, ax3] = plt.subplots(3,1)
-
-    ax1.plot(np.arange(0,N_sim)*dt,ref_y,'k--')
-    ax1.plot(np.arange(0,N_sim)*dt,y_plant, 'g')
-    ax1.plot(np.arange(0,N_sim)*dt,y_model,'r--')
-    ax1.plot(np.arange(0,N_sim)*dt,y_max_con*np.ones(N_sim),'k')
-    ax1.plot(np.arange(0,N_sim)*dt,y_min_con*np.ones(N_sim),'k')
-    ax1.plot(np.arange(0,N_sim)*dt,y_track_max*np.ones(N_sim),'b:')
-    ax1.plot(np.arange(0,N_sim)*dt,y_track_min*np.ones(N_sim),'b:')
-    ax1.set_xlabel(r"$t$")
-    ax1.set_ylabel(r"$y$")
-    ax1.grid(True)
-    ax1.set_xlim([0, dt*(N_sim-1)]) 
-
-    ax2.plot(np.arange(0,N_sim)*dt,u_plant[:,0], 'g')
-    ax2.plot(np.arange(0,N_sim)*dt,u_bounds_plant[0]*np.ones(N_sim),'k')
-    ax2.plot(np.arange(0,N_sim)*dt,-u_bounds_plant[0]*np.ones(N_sim),'k')
-    for t in range(N_sim):
-        if projected_indices[t] == 1.:
-            for i in range(nu):
-                ax2.scatter(t*dt, u_plant[t,i], color = 'red', s=10)
-    ax2.set_xlabel(r"$t$")
-    ax2.set_ylabel(r"$u$")
-    ax2.grid(True)
-    ax2.set_xlim([0, dt*(N_sim-1)]) 
-
-    if nx == 2:
-        Polytope(A=F, b=yRCI).plot(ax=ax3, patch_args = {"facecolor": 'w', "alpha": 1, "linewidth": 1, "linestyle": '-', "edgecolor": 'k'})
-        Polytope(A=F, b=yRCI_LPV_init).plot(ax=ax3, patch_args = {"facecolor": 'b', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'b'})
-        Polytope(A=F, b=yRCI_LTI).plot(ax=ax3, patch_args = {"facecolor": 'r', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'r'})
-    else:
-        Polytope(A=F, b=yRCI).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'w', "alpha": 1, "linewidth": 1, "linestyle": '-', "edgecolor": 'k'})
-        Polytope(A=F, b=yRCI_LPV_init).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'b', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'b'})
-        Polytope(A=F, b=yRCI_LTI).projection(project_away_dim = np.linspace(2,nx)).plot(ax=ax3, patch_args = {"facecolor": 'r', "alpha": 0.5, "linewidth": 1, "linestyle": '-', "edgecolor": 'r'})
-   
-    ax3.plot(x_model[:,0], x_model[:,1], 'g', linewidth = 2)
-    ax3.scatter(x_model[0,0], x_model[0,1], color = 'g')
-    ax3.autoscale()
-    ax3.set_xlabel(r"$x_1$")
-    ax3.set_ylabel(r"$x_2$")
-    ax3.grid(True)
-
-    plt.tight_layout()
-    plt.show()
 
 
