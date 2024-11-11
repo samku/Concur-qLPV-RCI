@@ -92,4 +92,4 @@ You can install a part of the required packages using `pip`:
 pip install jax jaxlib numpy flax jax-sysid jaxopt qpax casadi matplotlib scipy control
 ```
 
-- Please refer to \url{https://github.com/merlresearch/pycvxset} for installation of pycvxset. Functions from this package are used for polytope operations.
+- Please refer to https://github.com/merlresearch/pycvxset for installation of pycvxset. Functions from this package are used for polytope operations.
