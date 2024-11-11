@@ -76,9 +76,15 @@ In Step 3:
     - QP_form: 0 for primal QP, 1 for dual QP
     - regular: Regularization parameter for control invariant set computation. Need $$>0$$ if dual form is used.
 
+
 ## Additional Notes
-- The template matrix $\tilde{F}$ is selected in the function 'LTI_identification.py'. By default, the set $$X={x:\tilde{F}x \leq 1}$$ is set to be the $$\infty$$-norm ball. This can be changed by modifying the function.
+- The template matrix $\tilde{F}$ is selected in the function 'LTI_identification.py'. By default, the set $$X=\{x:\tilde{F}x \leq 1\}$$ is set to be the $$\infty$$-norm ball. This can be changed by modifying the function.
+
 - The function utils/qLPV_BFR.py computes the BFRs for the models. It reads a dictionary of the model parameters, the inputs and outputs, and option to use observer gain.
+
+- The script controller_synthesis/integral_tracking_filter.py synthesizes and tests the safe tracking controller. It uses the model class in controller_synthesis/qLPV_model.py which is initialized using the parameters from Step 3. 
+
+
 
 
 
