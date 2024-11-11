@@ -26,6 +26,9 @@ overwrite_data = False
 file_path = generate_file_path(folder_name, file_name, current_directory)
 if not file_path.exists() or overwrite_data:
     use_init_LTI = True
+    if only_SysID == False and use_init_LTI == False:
+        print('Need an initial LTI model for concurrent identification')
+        use_init_LTI = True
     nx = 2 #State dimension
     nq = 3 #Number of parameters
     nth = 6 #Number of neurons in each layer
