@@ -84,20 +84,11 @@ In Step 3:
 
 - The script controller_synthesis/integral_tracking_filter.py synthesizes and tests the safe tracking controller. It uses the model class in controller_synthesis/qLPV_model.py which is initialized using the parameters from Step 3. 
 
-
-
-
-
-
-    
-
-
-
-
-
 ## Installation
 
 You can install a part of the required packages using `pip`:
 
 ```bash
 pip install jax jaxlib numpy flax jax-sysid jaxopt qpax casadi matplotlib scipy control
+
+- Please refer to \url{https://github.com/merlresearch/pycvxset} for installation of pycvxset. Functions from this package are used for polytope operations.
