@@ -44,10 +44,8 @@ In Step 1:
 
 In Step 2:
 - qLPV models of the form 
-\begin{align*}
-x^+ = A(p(x,u))x + B(p(x,u))u\\
-y = Cx
-\end{align*}
+$$x^+ = A(p(x,u))x + B(p(x,u))u$$
+$$y = Cx$$
 
 
 ## Installation
