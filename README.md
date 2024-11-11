@@ -53,8 +53,9 @@ are identified using the function 'qLPV_identification.py'.
     - Only_SysID: Boolean to only perform system identification. If False, the function also identifies the control invariant set.
     - use_init_LTI: Boolean to use an initial LTI model for identification. If Only_SysID is True, this can be either True or False. If Only_SysID is False, this has to be True to compute a template control invariant set.
     - sizes: $$(nx,nq,nth,nH)=$$ (number of states, number of parameters, number of neurons in each layer, number of activation layers)
-    - kappa: Disturbance set inflation factor to account for finite data
     - only_px: Boolean - If True, the scheduling function is p(x) else p(x,u)
+    - kappa: Disturbance set inflation factor to account for finite data
+    - N_MPC: Horizon length affecting size metric of control invariant set
     - id_params: Dictionary containing the following parameters:
         - eta: Learning rate for Adam optimizer
         - rho_th: Regularization parameter for thresholding
@@ -63,10 +64,21 @@ are identified using the function 'qLPV_identification.py'.
         - iprint: Print frequency for Adam optimizer
         - memory: Memory for LBFGS optimizer
         - train_x0: Boolean - If True, the initial state is an optimization variable during training
-        - weight_RCI: Weight for the RCI set computation
+        - weight_RCI: Weight for the RCI set computation 
         - N_MPC: Horizon length for RCI set size factor
         - kappa_p: Regularization parameter for scheduling order reduction
         - kappa_x: Regularization parameter for state order reduction
+
+In Step 3:
+- The function 'concurrent_identification.py' computes the qLPV model, with control-invariant set regularization. The set template was consturucted in Step 2.
+
+- This function has the following options in addition to the ones in Step 2:
+    - QP_form: 0 for primal QP, 1 for dual QP
+    - regular: Regularization parameter for control invariant set computation. Need $$>0$$ if dual form is used.
+
+    
+    
+
 
 
 
