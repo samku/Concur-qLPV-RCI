@@ -70,13 +70,19 @@ are identified using the function 'qLPV_identification.py'.
         - kappa_x: Regularization parameter for state order reduction
 
 In Step 3:
-- The function 'concurrent_identification.py' computes the qLPV model, with control-invariant set regularization. The set template was consturucted in Step 2.
+- The function 'concurrent_identification.py' computes the qLPV model, with control-invariant set regularization. The set template was constructed in Step 2.
 
 - This function has the following options in addition to the ones in Step 2:
     - QP_form: 0 for primal QP, 1 for dual QP
     - regular: Regularization parameter for control invariant set computation. Need $$>0$$ if dual form is used.
 
-    
+## Additional Notes
+- The template $\tilde{F}$ is selected in the function 'LTI_identification.py'. By default, the set $$X={x:\tilde{F}x \leq 1}$$ is set to be the $$infty$$-norm ball. This can be changed by modifying the function.
+- The function utils/qLPV_BFR.py computes the BFRs for the models. It reads a dictionary of the model parameters, the inputs and outputs, and option to use observer gain.
+
+
+
+
     
 
 
