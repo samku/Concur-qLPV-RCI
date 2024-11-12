@@ -3,8 +3,10 @@ LTI SysID and template matrix F constructed here
 """
 
 from imports import *
+jax.config.update("jax_enable_x64", True)
 
 def initial_LTI_identification(Ys_data, Us_data, nx, constraints, kappa, N_MPC, only_SysID = False):
+    
     N = len(Ys_data)
     nu = Us_data.shape[1]
     ny = Ys_data.shape[1]

@@ -1,4 +1,5 @@
 from imports import *
+jax.config.update("jax_enable_x64", True)
 
 def qLPV_BFR(model_qLPV, input, output, only_px = False, observer = False):
 

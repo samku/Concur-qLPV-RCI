@@ -62,7 +62,7 @@ else:
 #Concurrent identification
 if not only_SysID:
     file_name = 'concurrent_SysID'
-    overwrite_data = True
+    overwrite_data = False
     file_path = generate_file_path(folder_name, file_name, current_directory)
     if (not file_path.exists() or overwrite_data):
         model_LPV = models['model_LPV']
