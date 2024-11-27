@@ -1,7 +1,7 @@
 # Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets
 This repository contains the code for the paper "Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets" by S.K.Mulagaleti and A.Bemporad
 
-## How to run the code
+## Code structure
 The main file to run is 'main.py'. This file consists of the following three main parts:
 1. Generate/Load dataset
 2. qLPV identification
