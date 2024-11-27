@@ -5,18 +5,11 @@ This repository contains the code for the paper "Combined Learning of Linear Par
 
 This project requires the following Python packages:
 
-- [jax](https://github.com/google/jax)
-- [jax.numpy](https://jax.readthedocs.io/en/latest/jax.numpy.html)
-- [jax.scipy](https://jax.readthedocs.io/en/latest/jax.scipy.html)
-- [numpy](https://numpy.org/)
-- [flax](https://github.com/google/flax)
 - [jax_sysid](https://github.com/bemporad/jax-sysid)
-- [jaxopt](https://github.com/google/jaxopt)
+- [flax](https://github.com/google/flax)
 - [qpax](https://github.com/kevin-tracy/qpax)
 - [casadi](https://web.casadi.org/)
-- [matplotlib](https://matplotlib.org/)
 - [pycvxset](https://github.com/merlresearch/pycvxset) 
-- [scipy](https://www.scipy.org/)
 - [control](https://python-control.readthedocs.io/)
 
 ## How to run the code
@@ -89,7 +82,7 @@ In Step 3:
 You can install a part of the required packages using `pip`:
 
 ```bash
-pip install jax jaxlib numpy flax jax-sysid jaxopt qpax casadi matplotlib scipy control
+pip install jax-sysid flax qpax casadi control
 ```
 
 - Please refer to https://github.com/merlresearch/pycvxset for installation of pycvxset. Functions from this package are used for polytope operations.
