@@ -1,17 +1,6 @@
 # Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets
 This repository contains the code for the paper "Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets" by S.K.Mulagaleti and A.Bemporad
 
-## Requirements
-
-This project requires the following Python packages:
-
-- [jax_sysid](https://github.com/bemporad/jax-sysid)
-- [flax](https://github.com/google/flax)
-- [qpax](https://github.com/kevin-tracy/qpax)
-- [casadi](https://web.casadi.org/)
-- [pycvxset](https://github.com/merlresearch/pycvxset) 
-- [control](https://python-control.readthedocs.io/)
-
 ## How to run the code
 The main file to run is 'main.py'. This file consists of the following three main parts:
 1. Generate/Load dataset
@@ -78,6 +67,15 @@ In Step 3:
 - The script controller_synthesis/integral_tracking_filter.py synthesizes and tests the safe tracking controller. It uses the model class in controller_synthesis/qLPV_model.py which is initialized using the parameters from Step 3. 
 
 ## Installation
+This project requires the following Python packages:
+
+- [jax_sysid](https://github.com/bemporad/jax-sysid)
+- [flax](https://github.com/google/flax)
+- [qpax](https://github.com/kevin-tracy/qpax)
+- [casadi](https://web.casadi.org/)
+- [pycvxset](https://github.com/merlresearch/pycvxset) 
+- [control](https://python-control.readthedocs.io/)
+
 
 You can install a part of the required packages using `pip`:
 
