@@ -1,5 +1,5 @@
 # Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets
-This repository contains the code for the paper "Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets" by S.K.Mulagaleti and A.Bemporad
+This repository contains the code for the paper "Combined Learning of Linear Parameter-Varying Models and Robust Control Invariant Sets" by S.K.Mulagaleti and A.Bemporad (2024). Preprint available at [arXiv:2411.18166](https://arxiv.org/pdf/2411.18166).
 
 ## Code structure
 The main file to run is 'main.py'. This file consists of the following three main parts:
@@ -64,6 +64,10 @@ In Step 3:
 - The function utils/qLPV_BFR.py computes the BFRs for the models. It reads a dictionary of the model parameters, the inputs and outputs, and option to use observer gain.
 
 - The script controller_synthesis/integral_tracking_filter.py synthesizes and tests the safe tracking controller. It uses the model class in controller_synthesis/qLPV_model.py which is initialized using the parameters from Step 3. 
+
+## Acknowledgements
+
+This research activity was supported by the European Research Council (ERC), Advanced Research Grant COMPACT (Grant Agreement No. 101141351)
 
 ## Installation
 This project requires the following Python packages:
